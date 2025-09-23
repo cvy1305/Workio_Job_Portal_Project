@@ -11,7 +11,7 @@ export const AppContextProvider = ({ children }) => {
   const [searchFilter, setSearchFilter] = useState({ title: "", location: "" });
   const [isSearched, setIsSearched] = useState(false);
   const [jobs, setJobs] = useState([]);
-  const [jobLoading, setJobLoading] = useState(false);
+  const [jobLoading, setJobLoading] = useState(true); // Start with true to prevent flash
 
   const [userToken, setUserToken] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -78,20 +78,48 @@ export const AppContextProvider = ({ children }) => {
 
 
   const fetchJobsData = async () => {
-    setJobLoading(true);
     try {
-      const { data } = await axios.get(`${backendUrl}/job/all-jobs`);
+      // Add timeout to prevent hanging and make it faster
+      const { data } = await axios.get(`${backendUrl}/job/all-jobs`, {
+        timeout: 5000, // 5 second timeout
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       if (data.success) {
         setJobs(data.jobData);
+        // Cache the jobs data in localStorage for faster subsequent loads
+        localStorage.setItem('cachedJobs', JSON.stringify(data.jobData));
+        localStorage.setItem('jobsCacheTime', Date.now().toString());
       } else {
-        toast.error(data.message);
+        console.error('Jobs fetch failed:', data.message);
+        // Try to load from cache if API fails
+        loadJobsFromCache();
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to fetch jobs.");
+      console.error('Jobs fetch error:', error);
+      // Try to load from cache if API fails
+      loadJobsFromCache();
     } finally {
       setJobLoading(false);
     }
   };
+
+  const loadJobsFromCache = () => {
+    try {
+      const cachedJobs = localStorage.getItem('cachedJobs');
+      const cacheTime = localStorage.getItem('jobsCacheTime');
+      
+      // Use cache if it's less than 5 minutes old
+      if (cachedJobs && cacheTime && (Date.now() - parseInt(cacheTime)) < 300000) {
+        setJobs(JSON.parse(cachedJobs));
+        console.log('Loaded jobs from cache');
+      }
+    } catch (error) {
+      console.error('Error loading jobs from cache:', error);
+    }
+  };
+
 
   const fetchUserApplication = async () => {
     try {
@@ -135,15 +163,20 @@ export const AppContextProvider = ({ children }) => {
   };
 
 
+  // Fetch jobs immediately on app load
+  useEffect(() => {
+    // Try to load from cache first for instant display
+    loadJobsFromCache();
+    // Then fetch fresh data from API
+    fetchJobsData();
+  }, []);
+
   useEffect(() => {
     if (document.cookie.includes('userToken=')) {
       fetchUserApplication();
     }
   }, []);
 
-  useEffect(() => {
-    fetchJobsData();
-  }, []);
 
   // Check authentication status on app load
   useEffect(() => {

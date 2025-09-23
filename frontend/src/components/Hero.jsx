@@ -63,7 +63,11 @@ const Hero = () => {
         {/* Heading */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-700 mb-4 leading-tight sm:leading-snug">
           There Are <span className="text-blue-700">
-            {jobLoading ? "..." : jobCount.toLocaleString()}
+            {jobLoading ? (
+              <span className="animate-pulse bg-gray-300 rounded px-2 py-1">Loading...</span>
+            ) : (
+              jobCount.toLocaleString()
+            )}
           </span> Postings Here
           For You!
         </h1>
