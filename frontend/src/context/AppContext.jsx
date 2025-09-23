@@ -7,12 +7,6 @@ export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
   const backendUrl = (import.meta.env.VITE_BACKEND_URL || "http://localhost:5000").replace(/\/$/, '');
-  
-  // Debug logging
-  console.log('Environment:', import.meta.env.MODE);
-  console.log('VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
-  console.log('Final backendUrl:', backendUrl);
-  console.log('All env vars:', import.meta.env);
 
   const [searchFilter, setSearchFilter] = useState({ title: "", location: "" });
   const [isSearched, setIsSearched] = useState(false);
