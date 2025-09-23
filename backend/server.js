@@ -15,12 +15,38 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL] 
-    : true, // Allow all origins in development
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ];
+    
+    // Add FRONTEND_URL from environment if it exists
+    if (process.env.FRONTEND_URL) {
+      allowedOrigins.push(process.env.FRONTEND_URL);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
+
+// Debug logging
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 connectDB();
 Cloudinary();
