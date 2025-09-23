@@ -1,36 +1,22 @@
-import React, { useContext, useRef, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { Search, MapPin } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import AutocompleteInput from "./AutocompleteInput";
 
 const Hero = () => {
   const navigate = useNavigate();
 
-  const [jobCount, setJobCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [jobs, setJobs] = useState([]);
   const [searchInput, setSearchInput] = useState({
     title: "",
     location: ""
   });
   const [showError, setShowError] = useState(false);
 
-  const { setSearchFilter, setIsSearched, backendUrl } = useContext(AppContext);
+  const { setSearchFilter, setIsSearched, jobs, jobLoading } = useContext(AppContext);
 
-  const fetchJobCount = async () => {
-    try {
-      const { data } = await axios.get(`${backendUrl}/job/all-jobs`);
-      if (data.success) {
-        setJobCount(data.jobData.length);
-        setJobs(data.jobData);
-      }
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Calculate job count from jobs data
+  const jobCount = jobs?.length || 0;
 
   // Generate suggestions from job data
   const titleSuggestions = useMemo(() => {
@@ -45,9 +31,6 @@ const Hero = () => {
     return locations.sort((a, b) => a.localeCompare(b));
   }, [jobs]);
 
-  useEffect(() => {
-    fetchJobCount();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -80,7 +63,7 @@ const Hero = () => {
         {/* Heading */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-700 mb-4 leading-tight sm:leading-snug">
           There Are <span className="text-blue-700">
-            {loading ? "..." : jobCount.toLocaleString()}
+            {jobLoading ? "..." : jobCount.toLocaleString()}
           </span> Postings Here
           For You!
         </h1>
