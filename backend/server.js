@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./src/db/connectDB.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import jobRoutes from "./src/routes/jobRoutes.js";
-import Cloudinary from "./src/utils/cloudinary.js";
+import Cloudinary from "./src/utils/Cloudinary.js";
 
 dotenv.config();
 
