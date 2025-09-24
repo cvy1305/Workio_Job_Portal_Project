@@ -15,44 +15,11 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-// CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173'
-    ];
-    
-    // Add FRONTEND_URL from environment if it exists
-    if (process.env.FRONTEND_URL) {
-      allowedOrigins.push(process.env.FRONTEND_URL);
-    }
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+// Simple CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
   credentials: true
-};
-
-app.use(cors(corsOptions));
-
-// Error handling for CORS
-app.use((err, req, res, next) => {
-  if (err.message === 'Not allowed by CORS') {
-    return res.status(403).json({ 
-      error: 'CORS Error', 
-      message: 'Origin not allowed',
-      origin: req.headers.origin 
-    });
-  }
-  next(err);
-});
+}));
 
 connectDB();
 Cloudinary();
