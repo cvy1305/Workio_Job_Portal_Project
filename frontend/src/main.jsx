@@ -5,10 +5,12 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { AppContextProvider } from "./context/AppContext.jsx";
 import { Toaster } from "react-hot-toast";
+import AppLoader from "./components/AppLoader.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AppContextProvider>
     <BrowserRouter>
+      <AppLoader />
       <App />
       <Toaster
         position="top-center"

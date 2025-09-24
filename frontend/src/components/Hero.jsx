@@ -13,7 +13,7 @@ const Hero = () => {
   });
   const [showError, setShowError] = useState(false);
 
-  const { setSearchFilter, setIsSearched, jobs, jobLoading } = useContext(AppContext);
+  const { setSearchFilter, setIsSearched, jobs } = useContext(AppContext);
 
   // Calculate job count from jobs data
   const jobCount = jobs?.length || 0;
@@ -63,11 +63,7 @@ const Hero = () => {
         {/* Heading */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-700 mb-4 leading-tight sm:leading-snug">
           There Are <span className="text-blue-700">
-            {jobLoading ? (
-              <span className="animate-pulse bg-gray-300 rounded px-2 py-1">Loading...</span>
-            ) : (
-              jobCount.toLocaleString()
-            )}
+            {jobCount.toLocaleString()}
           </span> Postings Here
           For You!
         </h1>
