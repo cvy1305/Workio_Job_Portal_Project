@@ -39,9 +39,15 @@ app.use("/api/job", jobRoutes);
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// Handle React routing, return all requests to React app
+// Handle React routing - catch all handler for non-API routes
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 const PORT = process.env.PORT || 5000;
