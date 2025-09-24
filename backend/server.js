@@ -15,21 +15,14 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-// CORS configuration
+// Simple CORS configuration using only environment variables
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL,
-    'https://workio-job-portal-project-bzf8.vercel.app' // Your frontend URL
-  ].filter(Boolean), // Remove undefined values
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
 // Debug logging
 console.log('FRONTEND_URL env var:', process.env.FRONTEND_URL);
-console.log('CORS origins:', [
-  process.env.FRONTEND_URL,
-  'https://workio-job-portal-project-bzf8.vercel.app'
-].filter(Boolean));
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -42,14 +35,6 @@ Cloudinary();
 
 app.get("/", (req, res) => res.send("api is working"));
 
-// Test endpoint to check CORS
-app.get("/test-cors", (req, res) => {
-  res.json({ 
-    message: "CORS test successful",
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString()
-  });
-});
 
 
 app.use("/user", userRoutes);
