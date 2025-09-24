@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import connectDB from "./src/db/connectDB.js";
 import userRoutes from "./src/routes/userRoutes.js";
@@ -12,33 +14,35 @@ import Cloudinary from "./src/utils/Cloudinary.js";
 dotenv.config();
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
-// Simple CORS configuration using only environment variables
+
+// CORS configuration for single service deployment
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: true, // Allow all origins since frontend and backend are on same domain
   credentials: true
 }));
 
-// Debug logging
-console.log('FRONTEND_URL env var:', process.env.FRONTEND_URL);
-
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
-  next();
-});
-
+// Initialize database and cloudinary
 connectDB();
 Cloudinary();
 
-app.get("/", (req, res) => res.send("api is working"));
+// API routes
+app.get("/api", (req, res) => res.send("API is working"));
+app.use("/api/user", userRoutes);
+app.use("/api/job", jobRoutes);
 
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-
-app.use("/user", userRoutes);
-app.use("/job", jobRoutes);
+// Handle React routing, return all requests to React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -6,11 +6,8 @@ import Cookies from "js-cookie";
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://workio-job-portal-project.vercel.app";
-  
-  // Debug: Check if environment variable is loaded
-  console.log("Backend URL:", backendUrl);
-  console.log("Environment variable:", import.meta.env.VITE_BACKEND_URL);
+  // For single service deployment, use relative API paths
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "/api";
 
   const [searchFilter, setSearchFilter] = useState({ title: "", location: "" });
   const [isSearched, setIsSearched] = useState(false);
