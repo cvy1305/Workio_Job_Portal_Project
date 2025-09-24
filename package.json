@@ -5,10 +5,9 @@
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "build": "cd frontend && npm run build",
+    "build": "npm run install-deps && cd frontend && npm run build",
     "install-deps": "cd backend && npm install && cd ../frontend && npm install",
-    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
-    "postinstall": "npm run install-deps && npm run build"
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
   },
   "dependencies": {
     "concurrently": "^8.2.2"
