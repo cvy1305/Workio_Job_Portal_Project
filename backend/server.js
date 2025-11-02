@@ -39,13 +39,8 @@ app.use("/api/job", jobRoutes);
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// Handle React routing - serve index.html for all non-API routes
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-});
-
 // Catch-all handler for React Router (must be last)
-app.use((req, res) => {
+app.get("/*splat", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
