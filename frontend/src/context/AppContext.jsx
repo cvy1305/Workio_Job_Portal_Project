@@ -90,44 +90,18 @@ export const AppContextProvider = ({ children }) => {
       });
       if (data.success) {
         setJobs(data.jobData);
-        // Cache the jobs data in localStorage for faster subsequent loads
-        localStorage.setItem('cachedJobs', JSON.stringify(data.jobData));
-        localStorage.setItem('jobsCacheTime', Date.now().toString());
         setAppReady(true); // App is ready when jobs are loaded
       } else {
         console.error('Jobs fetch failed:', data.message);
-        // Try to load from cache if API fails
-        loadJobsFromCache();
+        setAppReady(true);
       }
     } catch (error) {
       console.error('Jobs fetch error:', error);
-      // Try to load from cache if API fails
-      loadJobsFromCache();
+      setAppReady(true);
     } finally {
       setJobLoading(false);
     }
   };
-
-  const loadJobsFromCache = () => {
-    try {
-      const cachedJobs = localStorage.getItem('cachedJobs');
-      const cacheTime = localStorage.getItem('jobsCacheTime');
-      
-      // Use cache if it's less than 5 minutes old
-      if (cachedJobs && cacheTime && (Date.now() - parseInt(cacheTime)) < 300000) {
-        setJobs(JSON.parse(cachedJobs));
-        setAppReady(true); // App is ready when jobs are loaded from cache
-        console.log('Loaded jobs from cache');
-      } else {
-        // No valid cache, app will be ready when API call completes
-        setAppReady(true);
-      }
-    } catch (error) {
-      console.error('Error loading jobs from cache:', error);
-      setAppReady(true); // Set ready even if cache fails
-    }
-  };
-
 
   const fetchUserApplication = async () => {
     try {
@@ -172,19 +146,7 @@ export const AppContextProvider = ({ children }) => {
 
   // Fetch jobs immediately on app load
   useEffect(() => {
-    // Try to load from cache first for instant display
-    const cachedJobs = localStorage.getItem('cachedJobs');
-    const cacheTime = localStorage.getItem('jobsCacheTime');
-    
-    if (cachedJobs && cacheTime && (Date.now() - parseInt(cacheTime)) < 300000) {
-      // Valid cache exists, load it immediately
-      setJobs(JSON.parse(cachedJobs));
-      setAppReady(true);
-      console.log('Loaded jobs from cache immediately');
-    } else {
-      // No valid cache, fetch from API
-      fetchJobsData();
-    }
+    fetchJobsData();
   }, []);
 
   useEffect(() => {
