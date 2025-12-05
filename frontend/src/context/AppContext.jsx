@@ -49,7 +49,6 @@ export const AppContextProvider = ({ children }) => {
     } catch (error) {
       // Only handle unexpected errors (network errors, server errors)
       // 401 errors are now handled above, so this catches only real errors
-      console.error('Auth check error:', error);
       setUserToken(null);
       setUserData(null);
       setIsLogin(false);
