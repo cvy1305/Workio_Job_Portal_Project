@@ -13,8 +13,8 @@ A modern, full-stack job portal platform that connects job seekers with recruite
 - **Session Management** - Persistent login with automatic token validation
 
 ###  Advanced Job Search & Discovery
-- **Smart Autocomplete Search** - Real-time suggestions for job titles and locations
-- **Alphabetical Sorting** - Suggestions sorted by relevance and alphabetical order
+- **Real-time Search** - Instant filtering of job titles and locations as you type
+- **Autocomplete Suggestions** - Dropdown suggestions sorted alphabetically for job titles and locations
 - **Category Filtering** - Filter jobs by programming, design, marketing, etc.
 - **Location Filtering** - Search by specific cities or regions
 - **Reset Filters** - One-click filter reset functionality
@@ -57,7 +57,7 @@ A modern, full-stack job portal platform that connects job seekers with recruite
 ### For Job Seekers
 1. **Register** - Create account as "Candidate" with profile image
 2. **Upload Resume** - Add your resume to apply for jobs
-3. **Search Jobs** - Use autocomplete search or browse by category
+3. **Search Jobs** - Use real-time search or browse by category
 4. **Apply** - Click job cards to view details and apply
 5. **Track Applications** - Monitor application status in Applications page
 6. **Withdraw** - Cancel applications if needed before recruiter review
