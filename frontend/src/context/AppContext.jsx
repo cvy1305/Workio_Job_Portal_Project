@@ -1,7 +1,6 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import Cookies from "js-cookie";
 
 export const AppContext = createContext();
 
@@ -27,16 +26,9 @@ export const AppContextProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     setAuthLoading(true);
     
-    // Check for token cookie only
-    const hasTokenCookie = document.cookie.includes('userToken=');
-    
-    if (!hasTokenCookie) {
-      setAuthLoading(false);
-      return; // No token, skip authentication check
-    }
-
     try {
-      // Check user authentication
+      // Always attempt to check user authentication
+      // If httpOnly cookie exists, server will accept it automatically
       const userResponse = await axios.get(`${backendUrl}/user/user-data`, {
         withCredentials: true,
       });
@@ -45,12 +37,14 @@ export const AppContextProvider = ({ children }) => {
         setUserToken('authenticated');
         setUserData(userResponse.data.userData);
         setIsLogin(true);
-        // Fetch user applications when user is authenticated on app load
-        fetchUserApplication();
       }
     } catch (error) {
-      // User not authenticated, this is normal - don't log 401 errors
-      if (error.response?.status !== 401) {
+      // User not authenticated - ensure logged out state
+      if (error.response?.status === 401) {
+        setUserToken(null);
+        setUserData(null);
+        setIsLogin(false);
+        setUserApplication(null);
       }
     } finally {
       setAuthLoading(false);
@@ -148,13 +142,6 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     fetchJobsData();
   }, []);
-
-  useEffect(() => {
-    if (document.cookie.includes('userToken=')) {
-      fetchUserApplication();
-    }
-  }, []);
-
 
   // Check authentication status on app load
   useEffect(() => {

@@ -56,8 +56,8 @@ export const registerUser = async (req, res) => {
 
     // Set cookie with token
     res.cookie('userToken', token, {
-      httpOnly: false, // Changed to false for debugging
-      secure: false, // Changed to false for localhost
+      httpOnly: true, // Cookie is not accessible via JavaScript (security)
+      secure: true, // Cookie only sent over HTTPS (security)
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/'
@@ -125,8 +125,8 @@ export const loginUser = async (req, res) => {
 
     // Set cookie with token
     res.cookie('userToken', token, {
-      httpOnly: false, // Changed to false for debugging
-      secure: false, // Changed to false for localhost
+      httpOnly: true, // Cookie is not accessible via JavaScript (security)
+      secure: true, // Cookie only sent over HTTPS (security)
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/'
@@ -202,7 +202,12 @@ export const uploadResume = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    res.clearCookie('userToken');
+    res.clearCookie('userToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/'
+    });
     return res.status(200).json({
       success: true,
       message: "Logout successful",
