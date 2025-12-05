@@ -31,21 +31,29 @@ export const AppContextProvider = ({ children }) => {
       // If httpOnly cookie exists, server will accept it automatically
       const userResponse = await axios.get(`${backendUrl}/user/user-data`, {
         withCredentials: true,
+        // Prevent axios from treating 401 as an error (suppress console log)
+        validateStatus: (status) => status < 500, // Don't throw error for 401, only for server errors
       });
       
-      if (userResponse.data.success) {
+      if (userResponse.status === 200 && userResponse.data.success) {
         setUserToken('authenticated');
         setUserData(userResponse.data.userData);
         setIsLogin(true);
-      }
-    } catch (error) {
-      // User not authenticated - ensure logged out state
-      if (error.response?.status === 401) {
+      } else {
+        // User not authenticated (401 or other non-success response)
         setUserToken(null);
         setUserData(null);
         setIsLogin(false);
         setUserApplication(null);
       }
+    } catch (error) {
+      // Only handle unexpected errors (network errors, server errors)
+      // 401 errors are now handled above, so this catches only real errors
+      console.error('Auth check error:', error);
+      setUserToken(null);
+      setUserData(null);
+      setIsLogin(false);
+      setUserApplication(null);
     } finally {
       setAuthLoading(false);
     }
