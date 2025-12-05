@@ -133,9 +133,8 @@ export const AppContextProvider = ({ children }) => {
     try {
       setApplicationsLoading(true);
 
-      const { data } = await axios.post(
-        `${backendUrl}/user/get-user-applications`,
-        {},
+      const { data } = await axios.get(
+        `${backendUrl}/applications/user-applications`,
         {
           withCredentials: true,
         }

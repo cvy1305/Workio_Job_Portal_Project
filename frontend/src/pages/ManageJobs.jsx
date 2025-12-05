@@ -22,7 +22,7 @@ const ManageJobs = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `${backendUrl}/user/recruiter-jobs`,
+        `${backendUrl}/job/recruiter-jobs`,
         {
           withCredentials: true,
         }
@@ -42,7 +42,7 @@ const ManageJobs = () => {
   const changeJobVisiblity = async (id) => {
     try {
       const { data } = await axios.put(
-        `${backendUrl}/user/update-job/${id}`,
+        `${backendUrl}/job/update/${id}`,
         {
           visible: !manageJobData.find(job => job._id === id)?.visible,
         },
@@ -66,7 +66,7 @@ const ManageJobs = () => {
     if (window.confirm("Are you sure you want to delete this job? This action cannot be undone.")) {
       try {
         const { data } = await axios.delete(
-          `${backendUrl}/user/delete-job/${id}`,
+          `${backendUrl}/job/delete/${id}`,
           {
             withCredentials: true,
           }
@@ -91,7 +91,7 @@ const ManageJobs = () => {
     
     try {
       const { data } = await axios.get(
-        `${backendUrl}/user/job-applications/${job._id}`,
+        `${backendUrl}/applications/job/${job._id}`,
         {
           withCredentials: true,
         }
@@ -115,7 +115,7 @@ const ManageJobs = () => {
     setUpdatingStatus(applicationId);
     try {
       const { data } = await axios.put(
-        `${backendUrl}/user/update-application-status/${applicationId}`,
+        `${backendUrl}/applications/update-status/${applicationId}`,
         { status },
         {
           withCredentials: true,

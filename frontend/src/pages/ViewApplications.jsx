@@ -19,7 +19,7 @@ const ViewApplications = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.get(
-        `${backendUrl}/user/job-applications`,
+        `${backendUrl}/applications/recruiter-applications`,
         {
           withCredentials: true,
         }
@@ -42,7 +42,7 @@ const ViewApplications = () => {
     setUpdatingStatus(id);
     try {
       const { data } = await axios.put(
-        `${backendUrl}/user/update-application-status/${id}`,
+        `${backendUrl}/applications/update-status/${id}`,
         { status },
         {
           withCredentials: true,

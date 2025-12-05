@@ -43,7 +43,7 @@ const ApplyJob = () => {
       }
 
       const { data } = await axios.post(
-        `${backendUrl}/user/apply-job`,
+        `${backendUrl}/applications/apply`,
         { jobId },
         {
           withCredentials: true,

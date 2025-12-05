@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./src/db/connectDB.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import jobRoutes from "./src/routes/jobRoutes.js";
+import applicationRoutes from "./src/routes/applicationRoutes.js";
 import Cloudinary from "./src/utils/Cloudinary.js";
 
 dotenv.config();
@@ -35,6 +36,7 @@ Cloudinary();
 app.get("/api", (req, res) => res.send("API is working"));
 app.use("/api/user", userRoutes);
 app.use("/api/job", jobRoutes);
+app.use("/api/applications", applicationRoutes);
 
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, "../frontend/dist")));

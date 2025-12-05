@@ -66,7 +66,7 @@ const Applications = () => {
       setWithdrawingId(applicationId);
       try {
         const { data } = await axios.delete(
-          `${backendUrl}/user/withdraw-application/${applicationId}`,
+          `${backendUrl}/applications/withdraw/${applicationId}`,
           {
             withCredentials: true,
           }
