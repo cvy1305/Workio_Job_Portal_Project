@@ -13,7 +13,7 @@ const ViewApplications = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(null);
 
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, handleAuthError } = useContext(AppContext);
 
   const fetchViewApplicationsPageData = async () => {
     setIsLoading(true);
@@ -30,9 +30,11 @@ const ViewApplications = () => {
         toast.error(data?.message || "Failed to load applications.");
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch applications"
-      );
+      if (!handleAuthError(error)) {
+        toast.error(
+          error?.response?.data?.message || "Failed to fetch applications"
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -56,12 +58,14 @@ const ViewApplications = () => {
         toast.error(data?.message || "Failed to update status");
       }
     } catch (error) {
-      // Check if the application was withdrawn
-      if (error?.response?.status === 404) {
-        toast.error("Application was withdrawn by the user");
-        await fetchViewApplicationsPageData(); // Reload applications to reflect the withdrawal
-      } else {
-        toast.error(error?.response?.data?.message || "Error updating status");
+      if (!handleAuthError(error)) {
+        // Check if the application was withdrawn
+        if (error?.response?.status === 404) {
+          toast.error("Application was withdrawn by the user");
+          await fetchViewApplicationsPageData(); // Reload applications to reflect the withdrawal
+        } else {
+          toast.error(error?.response?.data?.message || "Error updating status");
+        }
       }
     } finally {
       setUpdatingStatus(null);

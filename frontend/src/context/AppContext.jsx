@@ -25,7 +25,7 @@ export const AppContextProvider = ({ children }) => {
   // Check authentication status on app load
   const checkAuthStatus = async () => {
     setAuthLoading(true);
-    
+
     try {
       // Always attempt to check user authentication
       // If httpOnly cookie exists, server will accept it automatically
@@ -34,7 +34,7 @@ export const AppContextProvider = ({ children }) => {
         // Prevent axios from treating 401 as an error (suppress console log)
         validateStatus: (status) => status < 500, // Don't throw error for 401, only for server errors
       });
-      
+
       if (userResponse.status === 200 && userResponse.data.success) {
         setUserToken('authenticated');
         setUserData(userResponse.data.userData);
@@ -58,6 +58,20 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+  // Simple helper function to handle 401 errors
+  // Call this in catch blocks of API calls to auto-logout on session expiry
+  const handleAuthError = (error) => {
+    if (error?.response?.status === 401 && isLogin) {
+      setUserToken(null);
+      setUserData(null);
+      setIsLogin(false);
+      setUserApplication(null);
+      toast.error("Session expired. Please login again.");
+      return true; // Indicates auth error was handled
+    }
+    return false; // Not an auth error
+  };
+
   const fetchUserData = async () => {
     if (!userToken) return;
     setUserDataLoading(true);
@@ -71,9 +85,11 @@ export const AppContextProvider = ({ children }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch user data."
-      );
+      if (!handleAuthError(error)) {
+        toast.error(
+          error?.response?.data?.message || "Failed to fetch user data."
+        );
+      }
     } finally {
       setUserDataLoading(false);
     }
@@ -121,7 +137,9 @@ export const AppContextProvider = ({ children }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      if (!handleAuthError(error)) {
+        toast.error(error?.response?.data?.message);
+      }
     } finally {
       setApplicationsLoading(false);
     }
@@ -133,7 +151,7 @@ export const AppContextProvider = ({ children }) => {
       setUserToken(null);
       setUserData(null);
       setIsLogin(false);
-      
+
       await axios.post(`${backendUrl}/user/logout-user`, {}, {
         withCredentials: true,
       });
@@ -143,7 +161,6 @@ export const AppContextProvider = ({ children }) => {
       toast.success("Logged out successfully");
     }
   };
-
 
   // Fetch jobs immediately on app load
   useEffect(() => {
@@ -195,6 +212,7 @@ export const AppContextProvider = ({ children }) => {
     fetchUserData,
     logoutUser,
     authLoading,
+    handleAuthError, // Helper to handle 401 errors in components
 
     userApplication,
     applicationsLoading,

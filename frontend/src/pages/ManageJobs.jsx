@@ -10,7 +10,7 @@ const ManageJobs = () => {
   const [manageJobData, setManageJobData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, handleAuthError } = useContext(AppContext);
 
   const fetchManageJobsData = async () => {
     setLoading(true);
@@ -27,7 +27,10 @@ const ManageJobs = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
+      // Check if it's a 401 error and handle logout
+      if (!handleAuthError(error)) {
+        toast.error(error?.response?.data?.message || "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -52,7 +55,9 @@ const ManageJobs = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      if (!handleAuthError(error)) {
+        toast.error(error?.response?.data?.message);
+      }
     }
   };
 
@@ -73,7 +78,9 @@ const ManageJobs = () => {
           toast.error(data.message);
         }
       } catch (error) {
-        toast.error(error?.response?.data?.message || "Failed to delete job");
+        if (!handleAuthError(error)) {
+          toast.error(error?.response?.data?.message || "Failed to delete job");
+        }
       }
     }
   };

@@ -18,7 +18,7 @@ const AddJob = () => {
   const [salary, setSalary] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, handleAuthError } = useContext(AppContext);
 
   const postJob = async (e) => {
     e.preventDefault();
@@ -56,7 +56,9 @@ const AddJob = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong.");
+      if (!handleAuthError(error)) {
+        toast.error(error?.response?.data?.message || "Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }

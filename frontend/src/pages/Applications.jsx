@@ -18,6 +18,7 @@ const Applications = () => {
     userData,
     fetchUserData,
     fetchUserApplication,
+    handleAuthError,
   } = useContext(AppContext);
 
   const [isEdit, setIsEdit] = useState(false);
@@ -55,7 +56,9 @@ const Applications = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Resume upload failed");
+      if (!handleAuthError(error)) {
+        toast.error(error?.response?.data?.message || "Resume upload failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -79,18 +82,20 @@ const Applications = () => {
           toast.error(data.message);
         }
       } catch (error) {
-        const errorMessage = error?.response?.data?.message || "Failed to withdraw application";
-        const currentStatus = error?.response?.data?.currentStatus;
-        
-        if (currentStatus) {
-          // Status has been changed by recruiter
-          toast.error(`${errorMessage} Please refresh the page to see the updated status.`);
-          // Reload the page after a short delay to show the toast
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        } else {
-          toast.error(errorMessage);
+        if (!handleAuthError(error)) {
+          const errorMessage = error?.response?.data?.message || "Failed to withdraw application";
+          const currentStatus = error?.response?.data?.currentStatus;
+
+          if (currentStatus) {
+            // Status has been changed by recruiter
+            toast.error(`${errorMessage} Please refresh the page to see the updated status.`);
+            // Reload the page after a short delay to show the toast
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            toast.error(errorMessage);
+          }
         }
       } finally {
         setWithdrawingId(null);
