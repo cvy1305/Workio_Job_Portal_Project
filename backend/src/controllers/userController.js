@@ -21,6 +21,14 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Enter your password" });
     }
 
+    // Password strength validation - must be at least 8 characters
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long"
+      });
+    }
+
     if (!userType || !['candidate', 'recruiter'].includes(userType)) {
       return res.status(400).json({ success: false, message: "Please select user type (candidate or recruiter)" });
     }
