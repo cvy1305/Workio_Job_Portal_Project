@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LoaderCircle, Mail, Lock } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "../utils/axios";
 import Navbar from "../components/Navbar";
 import SignupPopup from "../components/SignupPopup";
 
@@ -16,32 +16,26 @@ const Login = () => {
   const [isSignupPopupOpen, setIsSignupPopupOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { backendUrl, setUserData, setUserToken, setIsLogin } = useContext(AppContext);
+  const { setUserData, setUserToken, setIsLogin } = useContext(AppContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { data } = await axios.post(
-        `${backendUrl}/user/login-user`,
-        {
-          email,
-          password,
-          userType,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.post("/user/login-user", {
+        email,
+        password,
+        userType,
+      });
 
       if (data.success) {
-        
+
         setUserToken('authenticated');
         setUserData(data.userData);
         setIsLogin(true);
         toast.success(data.message);
-        
+
         // Redirect based on user type
         if (data.userData.userType === 'recruiter') {
           navigate("/dashboard");

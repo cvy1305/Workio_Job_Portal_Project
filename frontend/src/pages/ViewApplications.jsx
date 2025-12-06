@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../assets/assets";
-import axios from "axios";
+import axios from "../utils/axios";
 import { AppContext } from "../context/AppContext";
 import Loader from "../components/Loader";
 import toast from "react-hot-toast";
@@ -13,17 +13,12 @@ const ViewApplications = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(null);
 
-  const { backendUrl, handleAuthError } = useContext(AppContext);
+  const { handleAuthError } = useContext(AppContext);
 
   const fetchViewApplicationsPageData = async () => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(
-        `${backendUrl}/applications/recruiter-applications`,
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.get("/applications/recruiter-applications");
       if (data?.success) {
         setViewApplicationsPageData(data.applicationsData || []);
       } else {
@@ -44,11 +39,8 @@ const ViewApplications = () => {
     setUpdatingStatus(id);
     try {
       const { data } = await axios.put(
-        `${backendUrl}/applications/update-status/${id}`,
-        { status },
-        {
-          withCredentials: true,
-        }
+        `/applications/update-status/${id}`,
+        { status }
       );
 
       if (data?.success) {

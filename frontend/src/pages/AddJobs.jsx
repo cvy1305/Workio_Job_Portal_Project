@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { AppContext } from "../context/AppContext";
-import axios from "axios";
+import axios from "../utils/axios";
 import toast from "react-hot-toast";
 import { LoaderCircle } from "lucide-react";
 
@@ -18,27 +18,21 @@ const AddJob = () => {
   const [salary, setSalary] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { backendUrl, handleAuthError } = useContext(AppContext);
+  const { handleAuthError } = useContext(AppContext);
 
   const postJob = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { data } = await axios.post(
-        `${backendUrl}/job/add`,
-        {
-          title,
-          description,
-          category,
-          location,
-          level,
-          salary: salary ? Number(salary) : 0,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.post("/job/add", {
+        title,
+        description,
+        category,
+        location,
+        level,
+        salary: salary ? Number(salary) : 0,
+      });
 
       if (data.success) {
         toast.success(data.message);

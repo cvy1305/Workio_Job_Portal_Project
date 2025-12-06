@@ -1,13 +1,10 @@
-import axios from "axios";
+import axios from "../utils/axios";
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
-  // For single service deployment, use relative API paths
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "/api";
-
   const [searchFilter, setSearchFilter] = useState({ title: "", location: "" });
   const [isSearched, setIsSearched] = useState(false);
   const [jobs, setJobs] = useState([]);
@@ -29,8 +26,7 @@ export const AppContextProvider = ({ children }) => {
     try {
       // Always attempt to check user authentication
       // If httpOnly cookie exists, server will accept it automatically
-      const userResponse = await axios.get(`${backendUrl}/user/user-data`, {
-        withCredentials: true,
+      const userResponse = await axios.get("/user/user-data", {
         // Prevent axios from treating 401 as an error (suppress console log)
         validateStatus: (status) => status < 500, // Don't throw error for 401, only for server errors
       });
@@ -76,9 +72,7 @@ export const AppContextProvider = ({ children }) => {
     if (!userToken) return;
     setUserDataLoading(true);
     try {
-      const { data } = await axios.get(`${backendUrl}/user/user-data`, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get("/user/user-data");
       if (data.success) {
         setUserData(data.userData);
       } else {
@@ -99,7 +93,7 @@ export const AppContextProvider = ({ children }) => {
   const fetchJobsData = async () => {
     try {
       // Add timeout to prevent hanging and make it faster
-      const { data } = await axios.get(`${backendUrl}/job/all-jobs`, {
+      const { data } = await axios.get("/job/all-jobs", {
         timeout: 5000, // 5 second timeout
         headers: {
           'Cache-Control': 'no-cache'
@@ -124,12 +118,7 @@ export const AppContextProvider = ({ children }) => {
     try {
       setApplicationsLoading(true);
 
-      const { data } = await axios.get(
-        `${backendUrl}/applications/user-applications`,
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.get("/applications/user-applications");
 
       if (data.success) {
         setUserApplication(data.jobApplications);
@@ -152,9 +141,7 @@ export const AppContextProvider = ({ children }) => {
       setUserData(null);
       setIsLogin(false);
 
-      await axios.post(`${backendUrl}/user/logout-user`, {}, {
-        withCredentials: true,
-      });
+      await axios.post("/user/logout-user", {});
       toast.success("Logged out successfully");
     } catch (error) {
       // Even if the request fails, local state is already cleared
@@ -197,9 +184,6 @@ export const AppContextProvider = ({ children }) => {
     setJobs,
     jobLoading,
     fetchJobsData,
-
-    // Backend
-    backendUrl,
 
     // User
     userToken,

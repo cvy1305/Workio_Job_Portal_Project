@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../utils/axios";
 import { Clock, MapPin, User } from "lucide-react";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
@@ -22,7 +22,6 @@ const ApplyJob = () => {
   const {
     jobs,
     jobLoading,
-    backendUrl,
     userToken,
     userData,
     userApplication = [],
@@ -43,13 +42,7 @@ const ApplyJob = () => {
         return toast.error("Please upload your resume");
       }
 
-      const { data } = await axios.post(
-        `${backendUrl}/applications/apply`,
-        { jobId },
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.post("/applications/apply", { jobId });
 
       if (data.success) {
         toast.success(data.message);

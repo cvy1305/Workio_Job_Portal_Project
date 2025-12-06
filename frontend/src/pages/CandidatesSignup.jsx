@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../utils/axios";
 import { LoaderCircle, Lock, Mail, Upload, UserRound, Info, X } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -18,8 +18,7 @@ const CandidatesSignup = () => {
   const [passwordValid, setPasswordValid] = useState(false);
 
   const navigate = useNavigate();
-  const { backendUrl, setUserData, setUserToken, setIsLogin } =
-    useContext(AppContext);
+  const { setUserData, setUserToken, setIsLogin } = useContext(AppContext);
 
   useEffect(() => {
     if (image) {
@@ -35,13 +34,13 @@ const CandidatesSignup = () => {
 
   const userSignupHanlder = async (e) => {
     e.preventDefault();
-    
+
     // Validate password length
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters long");
       return;
     }
-    
+
     setLoading(true);
 
     try {
@@ -52,13 +51,7 @@ const CandidatesSignup = () => {
       formData.append("userType", "candidate");
       formData.append("image", image);
 
-      const { data } = await axios.post(
-        `${backendUrl}/user/register-user`,
-        formData,
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.post("/user/register-user", formData);
 
       if (data.success) {
         setUserToken('authenticated'); // Set authentication flag

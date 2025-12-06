@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import moment from "moment";
-import axios from "axios";
+import axios from "../utils/axios";
 import { AppContext } from "../context/AppContext";
 import Loader from "../components/Loader";
 import { toast } from "react-hot-toast";
@@ -10,17 +10,12 @@ const ManageJobs = () => {
   const [manageJobData, setManageJobData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { backendUrl, handleAuthError } = useContext(AppContext);
+  const { handleAuthError } = useContext(AppContext);
 
   const fetchManageJobsData = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(
-        `${backendUrl}/job/recruiter-jobs`,
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.get("/job/recruiter-jobs");
       if (data.success) {
         setManageJobData(data.jobsData);
       } else {
@@ -38,15 +33,9 @@ const ManageJobs = () => {
 
   const changeJobVisiblity = async (id) => {
     try {
-      const { data } = await axios.put(
-        `${backendUrl}/job/update/${id}`,
-        {
-          visible: !manageJobData.find(job => job._id === id)?.visible,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.put(`/job/update/${id}`, {
+        visible: !manageJobData.find(job => job._id === id)?.visible,
+      });
 
       if (data.success) {
         toast.success(data.message);
@@ -64,12 +53,7 @@ const ManageJobs = () => {
   const deleteJob = async (id) => {
     if (window.confirm("Are you sure you want to delete this job? This action cannot be undone.")) {
       try {
-        const { data } = await axios.delete(
-          `${backendUrl}/job/delete/${id}`,
-          {
-            withCredentials: true,
-          }
-        );
+        const { data } = await axios.delete(`/job/delete/${id}`);
 
         if (data.success) {
           toast.success(data.message);

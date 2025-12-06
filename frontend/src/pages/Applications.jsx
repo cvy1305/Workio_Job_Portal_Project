@@ -5,7 +5,7 @@ import moment from "moment";
 import { AppContext } from "../context/AppContext";
 import Loader from "../components/Loader";
 import { LoaderCircle, X } from "lucide-react";
-import axios from "axios";
+import axios from "../utils/axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +13,6 @@ const Applications = () => {
   const {
     userApplication,
     applicationsLoading,
-    backendUrl,
     userToken,
     userData,
     fetchUserData,
@@ -37,16 +36,11 @@ const Applications = () => {
       const formData = new FormData();
       formData.append("resume", resumeFile);
 
-      const { data } = await axios.post(
-        `${backendUrl}/user/upload-resume`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const { data } = await axios.post("/user/upload-resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (data.success) {
         toast.success(data.message);
@@ -69,10 +63,7 @@ const Applications = () => {
       setWithdrawingId(applicationId);
       try {
         const { data } = await axios.delete(
-          `${backendUrl}/applications/withdraw/${applicationId}`,
-          {
-            withCredentials: true,
-          }
+          `/applications/withdraw/${applicationId}`
         );
 
         if (data.success) {
