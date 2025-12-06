@@ -11,7 +11,7 @@ const userSchema = mongoose.Schema({
     enum: ['candidate', 'recruiter'],
     default: 'candidate'
   },
-  resume: { type: String, default: "" }, // Only for candidates
+  resume: { type: String }, // Only for candidates - no default, so field won't exist for recruiters (saves storage)
 });
 
 const User = mongoose.model("User", userSchema);
