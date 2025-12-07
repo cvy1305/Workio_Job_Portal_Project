@@ -46,10 +46,23 @@ app.get("/*splat", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
-// Error handling middleware
+// Error handling middleware (including multer file upload errors)
 app.use((err, req, res, next) => {
+  // Handle Multer file size errors
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ success: false, message: 'File is too large. Maximum size is 5MB.' });
+    }
+    return res.status(400).json({ success: false, message: err.message });
+  }
+
+  // Handle custom file filter errors (wrong file type)
+  if (err.message && (err.message.includes('PDF') || err.message.includes('image'))) {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+
   console.error('Error:', err.message);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
 const PORT = process.env.PORT || 5000;

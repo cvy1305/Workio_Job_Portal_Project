@@ -86,7 +86,7 @@ const CandidatesSignup = () => {
 
             <form className="space-y-4" onSubmit={userSignupHanlder}>
               <div className="flex flex-col items-center mb-4">
-                <label className="relative cursor-pointer">
+                <label className="relative cursor-pointer flex flex-col items-center">
                   <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
                     {previewUrl ? (
                       <img
@@ -101,11 +101,29 @@ const CandidatesSignup = () => {
                   <input
                     type="file"
                     className="hidden"
-                    accept="image/*"
-                    onChange={(e) => setImage(e.target.files[0])}
+                    accept="image/jpeg,image/png,image/jpg,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        // Validate file type
+                        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+                        if (!allowedTypes.includes(file.type)) {
+                          toast.error('Only JPEG, PNG, JPG, and WebP images are allowed');
+                          e.target.value = '';
+                          return;
+                        }
+                        // Validate file size (2MB max)
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast.error('Profile picture must be less than 2MB');
+                          e.target.value = '';
+                          return;
+                        }
+                        setImage(file);
+                      }
+                    }}
                   />
                   <span className="block text-xs text-center mt-2 text-gray-500">
-                    {image ? "Change photo" : "Upload your photo"}
+                    {image ? "Change photo" : "Upload photo (max 2MB)"}
                   </span>
                 </label>
               </div>

@@ -112,10 +112,27 @@ const Applications = () => {
                   type="file"
                   hidden
                   accept="application/pdf"
-                  onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // Validate file type (PDF only)
+                      if (file.type !== 'application/pdf') {
+                        toast.error('Only PDF files are allowed for resume');
+                        e.target.value = '';
+                        return;
+                      }
+                      // Validate file size (5MB max)
+                      if (file.size > 5 * 1024 * 1024) {
+                        toast.error('Resume must be less than 5MB');
+                        e.target.value = '';
+                        return;
+                      }
+                      setResumeFile(file);
+                    }
+                  }}
                 />
                 <span className="bg-blue-100 text-blue-500 rounded px-3 py-1.5 text-sm hover:bg-blue-200 transition-colors">
-                  {resumeFile ? resumeFile.name : "Select resume"}
+                  {resumeFile ? resumeFile.name : "Select PDF (max 5MB)"}
                 </span>
                 <img
                   className="w-8"

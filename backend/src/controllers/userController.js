@@ -37,6 +37,15 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Upload your image" });
     }
 
+    // Validate image size (2MB max)
+    const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+    if (imageFile.size > MAX_IMAGE_SIZE) {
+      return res.status(400).json({
+        success: false,
+        message: "Profile picture must be less than 2MB",
+      });
+    }
+
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -176,6 +185,15 @@ export const uploadResume = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Resume file is required",
+      });
+    }
+
+    // Validate resume size (5MB max)
+    const MAX_RESUME_SIZE = 5 * 1024 * 1024;
+    if (resumeFile.size > MAX_RESUME_SIZE) {
+      return res.status(400).json({
+        success: false,
+        message: "Resume must be less than 5MB",
       });
     }
 
